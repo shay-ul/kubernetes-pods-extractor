@@ -3,11 +3,19 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-def main():
-    config.load_incluster_config()
-    #config.load_kube_config()
-
+def get_kube_config():
+    try:
+        config.load_incluster_config()
+    except config.ConfigException:
+        try:
+            config.load_kube_config()
+        except config.ConfigException:
+            raise Exception("Could not configure kubernetes python client")
     v1 = client.CoreV1Api()
+    return v1
+
+def main():
+    v1 = get_kube_config()
     pods = v1.list_pod_for_all_namespaces(watch=False)
     pods_details_list = []
     for pod in pods.items:
