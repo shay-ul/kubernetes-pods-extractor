@@ -19,7 +19,7 @@ def main():
     pods = v1.list_pod_for_all_namespaces(watch=False)
     pods_details_list = []
     for pod in pods.items:
-        status = get_pod_status(v1,pod)
+        status = get_pod_status(pod)
         dict = {
             "name": pod.metadata.name,
             "namespace": pod.metadata.namespace,
@@ -30,7 +30,7 @@ def main():
         pods_details_list.append(dict)
     return (pods_details_list)
 
-def get_pod_status(v1,pod):
+def get_pod_status(pod):
     status = pod.status.phase
     for container_status in pod.status.container_statuses:
         if container_status.started is False or container_status.ready is False:
