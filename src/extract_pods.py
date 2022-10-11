@@ -32,12 +32,14 @@ def main():
 
 def get_pod_status(pod):
     status = pod.status.phase
-    for container_status in pod.status.container_statuses:
-        if container_status.started is False or container_status.ready is False:
-            waiting_state = container_status.state.waiting
-            if waiting_state is not None:
-                status = waiting_state.reason
-    return status
+    try:
+        for container_status in pod.status.container_statuses:
+            if container_status.started is False or container_status.ready is False:
+                waiting_state = container_status.state.waiting
+                if waiting_state is not None:
+                    status = waiting_state.reason
+    finally:
+        return status
 
 @app.route('/')
 def hello_world():
